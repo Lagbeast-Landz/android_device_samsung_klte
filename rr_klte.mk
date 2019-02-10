@@ -22,3 +22,6 @@ $(call inherit-product, device/samsung/klte/full_klte.mk)
 
 PRODUCT_DEVICE := klte
 PRODUCT_NAME := rr_klte
+
+PRODUCT_PROPERTY_OVERRIDES += \
+ro.lineage.build.vendor_security_patch=2019-01-02
