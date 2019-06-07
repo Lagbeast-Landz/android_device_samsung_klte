@@ -23,15 +23,6 @@ $(call inherit-product-if-exists, vendor/samsung/klte/klte-vendor.mk)
 # Overlays
 DEVICE_PACKAGE_OVERLAYS += $(LOCAL_PATH)/overlay
 
-# AndroidBw
-PRODUCT_PACKAGES += \
-     firefox \
-     signal \
-     osmand \
-     vlc \
-#    fakegps \
-     bwcommunity
-	 
 # Fingerprint
 $(call inherit-product, device/samsung/klte-common/fingerprint/product.mk)
 
