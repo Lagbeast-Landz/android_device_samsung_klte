@@ -34,15 +34,73 @@
 #include <android-base/logging.h>
 #include <android-base/properties.h>
 
+#define _REALLY_INCLUDE_SYS__SYSTEM_PROPERTIES_H_
+#include <sys/_system_properties.h>
+
 #include "property_service.h"
 #include "vendor_init.h"
-
-#include "init_msm8974.h"
 
 using android::base::GetProperty;
 using android::init::property_set;
 
-void init_target_properties()
+void property_override(char const prop[], char const value[])
+{
+    prop_info *pi;
+
+    pi = (prop_info*) __system_property_find(prop);
+    if (pi)
+        __system_property_update(pi, value, strlen(value));
+    else
+        __system_property_add(prop, strlen(prop), value, strlen(value));
+}
+
+void property_override_dual(char const system_prop[],
+        char const vendor_prop[], char const value[])
+{
+    property_override(system_prop, value);
+    property_override(vendor_prop, value);
+}
+
+void set_rild_libpath(char const variant[])
+{
+    std::string libpath("/system/vendor/lib/libsec-ril.");
+    libpath += variant;
+    libpath += ".so";
+
+    property_override("rild.libpath", libpath.c_str());
+}
+
+void cdma_properties(char const operator_alpha[],
+        char const operator_numeric[],
+        char const default_cdma_sub[],
+        char const default_network[],
+        char const rild_lib_variant[])
+{
+    // Dynamic CDMA Properties
+    property_set("ro.cdma.home.operator.alpha", operator_alpha);
+    property_set("ro.cdma.home.operator.numeric", operator_numeric);
+    property_set("ro.telephony.default_cdma_sub", default_cdma_sub);
+    property_set("ro.telephony.default_network", default_network);
+    set_rild_libpath(rild_lib_variant);
+
+    // Static CDMA Properties
+    property_set("ril.subscription.types", "NV,RUIM");
+    property_set("telephony.lteOnCdmaDevice", "1");
+}
+
+void gsm_properties(const char default_network[],
+        char const rild_lib_variant[])
+{
+    set_rild_libpath(rild_lib_variant);
+
+    // Dynamic GSM Properties
+    property_set("ro.telephony.default_network", default_network);
+
+    // Static GSM Properties
+    property_set("telephony.lteOnGsmDevice", "1");
+}
+
+void vendor_load_properties()
 {
     std::string bootloader = GetProperty("ro.bootloader", "");
 
