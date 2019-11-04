@@ -90,7 +90,7 @@ void cdma_properties(char const *operator_alpha,
 
     /* Static CDMA Properties */
     property_set("ril.subscription.types", "NV,RUIM");
-    property_set("ro.telephony.default_cdma_sub", "1");
+    property_set("ro.telephony.default_cdma_sub", "0");
     property_set("telephony.lteOnCdmaDevice", "1");
 }
 
